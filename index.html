@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NG - Meaningful Name Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .name-card {
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .name-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .generate-btn {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+        }
+
+        .generate-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <div class="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center items-center">
+        <h1 class="text-4xl md:text-6xl font-bold mb-8 text-center text-blue-800">
+            Meaningful Name Generator
+        </h1>
+
+        <div class="w-full max-w-md">
+            <button id="generateButton" class="w-full text-white py-4 rounded-full mb-6 generate-btn">
+                Discover a Name
+            </button>
+
+            <div id="namesContainer" class="space-y-4">
+                <!-- Generated names will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive name database with meanings
+        const nameDatabase = [
+            { name: 'Aria', origin: 'Italian', meaning: 'Song or melody' },
+            { name: 'Kai', origin: 'Hawaiian', meaning: 'Sea' },
+            { name: 'Zara', origin: 'Arabic', meaning: 'Blooming flower' },
+            { name: 'Rowan', origin: 'Gaelic', meaning: 'Little red one' },
+            { name: 'Nova', origin: 'Latin', meaning: 'New' },
+            { name: 'Ezra', origin: 'Hebrew', meaning: 'Helper' },
+            { name: 'Luna', origin: 'Latin', meaning: 'Moon' },
+            { name: 'Sage', origin: 'Latin', meaning: 'Wise' },
+            { name: 'Atlas', origin: 'Greek', meaning: 'To carry' },
+            { name: 'Phoenix', origin: 'Greek', meaning: 'Dark red' },
+            { name: 'Seren', origin: 'Welsh', meaning: 'Star' },
+            { name: 'Orion', origin: 'Greek', meaning: 'Rising in the sky' },
+            { name: 'Raven', origin: 'English', meaning: 'Black bird' },
+            { name: 'Ember', origin: 'English', meaning: 'Burning coal' },
+            { name: 'Lyra', origin: 'Greek', meaning: 'Lyre' }
+        ];
+
+        // DOM Elements
+        const generateButton = document.getElementById('generateButton');
+        const namesContainer = document.getElementById('namesContainer');
+
+        // Name Generation Event
+        generateButton.addEventListener('click', () => {
+            // Randomly select a name from the database
+            const nameObj = nameDatabase[Math.floor(Math.random() * nameDatabase.length)];
+            
+            const nameCard = document.createElement('div');
+            nameCard.classList.add('name-card', 'p-4', 'rounded-lg', 'text-center');
+            nameCard.innerHTML = `
+                <h2 class="text-2xl font-bold text-blue-800">${nameObj.name}</h2>
+                <p class="text-sm text-gray-600 mt-2">
+                    Origin: ${nameObj.origin} | Meaning: ${nameObj.meaning}
+                </p>
+            `;
+
+            // Prepend new name to container, limit to 5 names
+            namesContainer.insertBefore(nameCard, namesContainer.firstChild);
+            if (namesContainer.children.length > 5) {
+                namesContainer.removeChild(namesContainer.lastChild);
+            }
+        });
+    </script>
+</body>
+</html>
