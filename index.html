@@ -39,6 +39,22 @@
             transform: scale(1.05);
         }
 
+        .control-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: #cbd5e0;
+            transform: scale(1.05);
+        }
+
+        .control-btn.active {
+            background: #68d391;
+            color: white;
+        }
+
         .favorite-btn {
             transition: color 0.3s ease;
         }
@@ -131,9 +147,16 @@
         </div>
 
         <!-- Generate Button -->
-        <button id="generateButton" class="generate-btn text-white py-3 px-8 rounded-full mb-8 text-lg font-semibold">
+        <button id="generateButton" class="generate-btn text-white py-3 px-8 rounded-full mb-4 text-lg font-semibold">
             Pick a Name
         </button>
+
+        <!-- Control Buttons -->
+        <div class="flex gap-3 mb-8">
+            <button id="playButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold">Play</button>
+            <button id="pauseButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold">Pause</button>
+            <button id="nextButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold">Next</button>
+        </div>
 
         <!-- Names Container -->
         <div id="namesContainer" class="w-full max-w-2xl space-y-4"></div>
@@ -185,6 +208,9 @@
         const enterButton = document.getElementById('enterButton');
         const mainApp = document.getElementById('mainApp');
         const generateButton = document.getElementById('generateButton');
+        const playButton = document.getElementById('playButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const nextButton = document.getElementById('nextButton');
         const namesContainer = document.getElementById('namesContainer');
         const favoritesContainer = document.getElementById('favoritesContainer');
         const searchInput = document.getElementById('searchInput');
@@ -193,6 +219,8 @@
         // Favorites and session storage
         let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
         let sessionNames = JSON.parse(sessionStorage.getItem('sessionNames')) || [];
+        let isPlaying = false;
+        let cycleInterval;
 
         // Render name card
         function renderNameCard(nameObj, container, isFavorite = false) {
@@ -232,17 +260,21 @@
             });
         }
 
-        // Generate fresh names for new session
-        function generateFreshNames() {
+        // Generate a batch of fresh names
+        function generateFreshBatch() {
             namesContainer.innerHTML = '';
-            sessionNames = [];
             const filteredNames = filterNames();
             if (filteredNames.length === 0) {
                 namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
                 return;
             }
-            const numNames = Math.min(5, filteredNames.length);
-            const shuffled = filteredNames.sort(() => 0.5 - Math.random());
+            const availableNames = filteredNames.filter(nameObj => !sessionNames.some(sn => sn.name === nameObj.name));
+            if (availableNames.length === 0) {
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No new names available. Try resetting filters or starting a new session.</p>';
+                return;
+            }
+            const numNames = Math.min(5, availableNames.length);
+            const shuffled = availableNames.sort(() => 0.5 - Math.random());
             for (let i = 0; i < numNames; i++) {
                 const nameObj = shuffled[i];
                 sessionNames.push(nameObj);
@@ -251,22 +283,45 @@
             sessionStorage.setItem('sessionNames', JSON.stringify(sessionNames));
         }
 
+        // Start auto-cycling names
+        function startCycling() {
+            if (!isPlaying) {
+                isPlaying = true;
+                playButton.classList.add('active');
+                pauseButton.classList.remove('active');
+                cycleInterval = setInterval(() => {
+                    generateFreshBatch();
+                }, 5000); // Cycle every 5 seconds
+            }
+        }
+
+        // Pause auto-cycling
+        function pauseCycling() {
+            if (isPlaying) {
+                isPlaying = false;
+                playButton.classList.remove('active');
+                pauseButton.classList.add('active');
+                clearInterval(cycleInterval);
+            }
+        }
+
         // Transition from intro to main app
         enterButton.addEventListener('click', () => {
             introPage.classList.add('hidden');
             mainApp.classList.remove('hidden');
-            generateFreshNames();
+            generateFreshBatch();
             renderFavorites();
+            startCycling(); // Start cycling on entry
         });
 
-        // Generate random name
+        // Generate single random name
         generateButton.addEventListener('click', () => {
+            pauseCycling(); // Pause cycling when manually picking a name
             const filteredNames = filterNames();
             if (filteredNames.length === 0) {
                 namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
                 return;
             }
-            // Avoid duplicates in session
             const availableNames = filteredNames.filter(nameObj => !sessionNames.some(sn => sn.name === nameObj.name));
             if (availableNames.length === 0) {
                 namesContainer.innerHTML = '<p class="text-center text-gray-500">No new names available. Try resetting filters.</p>';
@@ -276,6 +331,22 @@
             sessionNames.push(nameObj);
             sessionStorage.setItem('sessionNames', JSON.stringify(sessionNames));
             renderNameCard(nameObj, namesContainer);
+        });
+
+        // Play button
+        playButton.addEventListener('click', () => {
+            startCycling();
+        });
+
+        // Pause button
+        pauseButton.addEventListener('click', () => {
+            pauseCycling();
+        });
+
+        // Next button
+        nextButton.addEventListener('click', () => {
+            pauseCycling(); // Pause cycling when manually advancing
+            generateFreshBatch();
         });
 
         // Handle favorite button
@@ -300,8 +371,14 @@
         });
 
         // Filter event listeners
-        searchInput.addEventListener('input', generateFreshNames);
-        genderFilter.addEventListener('change', generateFreshNames);
+        searchInput.addEventListener('input', () => {
+            pauseCycling(); // Pause cycling when filters change
+            generateFreshBatch();
+        });
+        genderFilter.addEventListener('change', () => {
+            pauseCycling(); // Pause cycling when filters change
+            generateFreshBatch();
+        });
     </script>
 </body>
 </html>
