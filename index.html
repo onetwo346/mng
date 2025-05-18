@@ -3,98 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NG - Meaningful Name Generator</title>
+    <title>Baby Name Picker</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
-
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa, #bbdefb);
+            color: #1a202c;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .name-card {
             transition: all 0.3s ease;
             background: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
         }
 
         .name-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
         .generate-btn {
-            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(to right, #4c51bf, #ed64a6);
+            transition: transform 0.2s ease;
         }
 
         .generate-btn:hover {
-            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .favorite-btn {
+            transition: color 0.3s ease;
+        }
+
+        .favorite-btn:hover {
+            color: #ed64a6;
+        }
+
+        .filter-input, .filter-select {
+            transition: all 0.3s ease;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.3);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
-    <div class="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center items-center">
-        <h1 class="text-4xl md:text-6xl font-bold mb-8 text-center text-blue-800">
-            Meaningful Name Generator
+<body class="flex flex-col">
+    <div class="container mx-auto px-4 py-12 flex-grow flex flex-col items-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6 text-center text-indigo-900">
+            Baby Name Picker
         </h1>
+        <p class="text-lg text-gray-600 mb-8 text-center max-w-md">
+            Discover unique and meaningful names for your little one!
+        </p>
 
-        <div class="w-full max-w-md">
-            <button id="generateButton" class="w-full text-white py-4 rounded-full mb-6 generate-btn">
-                Discover a Name
-            </button>
+        <!-- Filters -->
+        <div class="w-full max-w-lg mb-8 flex flex-col md:flex-row gap-4">
+            <input id="searchInput" type="text" placeholder="Search names..." class="filter-input w-full md:w-1/2 p-3 rounded-lg border border-gray-300 focus:border-indigo-500">
+            <select id="genderFilter" class="filter-select w-full md:w-1/2 p-3 rounded-lg border border-gray-300 focus:border-indigo-500">
+                <option value="all">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="neutral">Gender Neutral</option>
+            </select>
+        </div>
 
-            <div id="namesContainer" class="space-y-4">
-                <!-- Generated names will appear here -->
-            </div>
+        <!-- Generate Button -->
+        <button id="generateButton" class="generate-btn text-white py-3 px-8 rounded-full mb-8 text-lg font-semibold">
+            Pick a Name
+        </button>
+
+        <!-- Names Container -->
+        <div id="namesContainer" class="w-full max-w-2xl space-y-4"></div>
+
+        <!-- Favorites Section -->
+        <div class="w-full max-w-2xl mt-12">
+            <h2 class="text-2xl font-semibold text-indigo-900 mb-4">Your Favorites</h2>
+            <div id="favoritesContainer" class="space-y-4"></div>
         </div>
     </div>
 
     <script>
-        // Comprehensive name database with meanings
+        // Expanded name database
         const nameDatabase = [
-            { name: 'Aria', origin: 'Italian', meaning: 'Song or melody' },
-            { name: 'Kai', origin: 'Hawaiian', meaning: 'Sea' },
-            { name: 'Zara', origin: 'Arabic', meaning: 'Blooming flower' },
-            { name: 'Rowan', origin: 'Gaelic', meaning: 'Little red one' },
-            { name: 'Nova', origin: 'Latin', meaning: 'New' },
-            { name: 'Ezra', origin: 'Hebrew', meaning: 'Helper' },
-            { name: 'Luna', origin: 'Latin', meaning: 'Moon' },
-            { name: 'Sage', origin: 'Latin', meaning: 'Wise' },
-            { name: 'Atlas', origin: 'Greek', meaning: 'To carry' },
-            { name: 'Phoenix', origin: 'Greek', meaning: 'Dark red' },
-            { name: 'Seren', origin: 'Welsh', meaning: 'Star' },
-            { name: 'Orion', origin: 'Greek', meaning: 'Rising in the sky' },
-            { name: 'Raven', origin: 'English', meaning: 'Black bird' },
-            { name: 'Ember', origin: 'English', meaning: 'Burning coal' },
-            { name: 'Lyra', origin: 'Greek', meaning: 'Lyre' }
+            { name: 'Aria', origin: 'Italian', meaning: 'Song or melody', gender: 'female' },
+            { name: 'Kai', origin: 'Hawaiian', meaning: 'Sea', gender: 'neutral' },
+            { name: 'Zara', origin: 'Arabic', meaning: 'Blooming flower', gender: 'female' },
+            { name: 'Rowan', origin: 'Gaelic', meaning: 'Little red one', gender: 'neutral' },
+            { name: 'Nova', origin: 'Latin', meaning: 'New', gender: 'female' },
+            { name: 'Ezra', origin: 'Hebrew', meaning: 'Helper', gender: 'male' },
+            { name: 'Luna', origin: 'Latin', meaning: 'Moon', gender: 'female' },
+            { name: 'Sage', origin: 'Latin', meaning: 'Wise', gender: 'neutral' },
+            { name: 'Atlas', origin: 'Greek', meaning: 'To carry', gender: 'male' },
+            { name: 'Phoenix', origin: 'Greek', meaning: 'Dark red', gender: 'neutral' },
+            { name: 'Seren', origin: 'Welsh', meaning: 'Star', gender: 'female' },
+            { name: 'Orion', origin: 'Greek', meaning: 'Rising in the sky', gender: 'male' },
+            { name: 'Raven', origin: 'English', meaning: 'Black bird', gender: 'neutral' },
+            { name: 'Ember', origin: 'English', meaning: 'Burning coal', gender: 'neutral' },
+            { name: 'Lyra', origin: 'Greek', meaning: 'Lyre', gender: 'female' },
+            { name: 'Finn', origin: 'Irish', meaning: 'Fair', gender: 'male' },
+            { name: 'Mila', origin: 'Slavic', meaning: 'Gracious', gender: 'female' },
+            { name: 'Theo', origin: 'Greek', meaning: 'Gift of God', gender: 'male' },
+            { name: 'Ivy', origin: 'English', meaning: 'Climbing vine', gender: 'female' },
+            { name: 'Jasper', origin: 'Persian', meaning: 'Bringer of treasure', gender: 'male' },
+            { name: 'Willow', origin: 'English', meaning: 'Graceful', gender: 'female' },
+            { name: 'Remy', origin: 'French', meaning: 'Oarsman', gender: 'neutral' },
+            { name: 'Esme', origin: 'French', meaning: 'Loved', gender: 'female' },
+            { name: 'Cairo', origin: 'Arabic', meaning: 'Victorious', gender: 'male' },
+            { name: 'Juni', origin: 'Latin', meaning: 'Youthful', gender: 'female' },
+            { name: 'Zephyr', origin: 'Greek', meaning: 'West wind', gender: 'neutral' },
+            { name: 'Amara', origin: 'African', meaning: 'Eternal', gender: 'female' },
+            { name: 'Silas', origin: 'Latin', meaning: 'Forest', gender: 'male' },
+            { name: 'Hazel', origin: 'English', meaning: 'Hazelnut tree', gender: 'female' },
+            { name: 'Arlo', origin: 'English', meaning: 'Fortified hill', gender: 'male' }
         ];
 
         // DOM Elements
         const generateButton = document.getElementById('generateButton');
         const namesContainer = document.getElementById('namesContainer');
+        const favoritesContainer = document.getElementById('favoritesContainer');
+        const searchInput = document.getElementById('searchInput');
+        const genderFilter = document.getElementById('genderFilter');
 
-        // Name Generation Event
-        generateButton.addEventListener('click', () => {
-            // Randomly select a name from the database
-            const nameObj = nameDatabase[Math.floor(Math.random() * nameDatabase.length)];
-            
+        // Favorites storage
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+        // Render name card
+        function renderNameCard(nameObj, container, isFavorite = false) {
             const nameCard = document.createElement('div');
-            nameCard.classList.add('name-card', 'p-4', 'rounded-lg', 'text-center');
+            nameCard.classList.add('name-card', 'p-6', 'fade-in');
             nameCard.innerHTML = `
-                <h2 class="text-2xl font-bold text-blue-800">${nameObj.name}</h2>
+                <div class="flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-indigo-900">${nameObj.name}</h2>
+                    <button class="favorite-btn text-2xl ${favorites.some(fav => fav.name === nameObj.name) ? 'text-pink-500' : 'text-gray-400'}" data-name="${nameObj.name}">
+                        ${favorites.some(fav => fav.name === nameObj.name) ? '♥' : '♡'}
+                    </button>
+                </div>
                 <p class="text-sm text-gray-600 mt-2">
-                    Origin: ${nameObj.origin} | Meaning: ${nameObj.meaning}
+                    Origin: ${nameObj.origin} | Meaning: ${nameObj.meaning} | Gender: ${nameObj.gender.charAt(0).toUpperCase() + nameObj.gender.slice(1)}
                 </p>
             `;
+            container.insertBefore(nameCard, container.firstChild);
+            if (container.children.length > 5 && !isFavorite) {
+                container.removeChild(container.lastChild);
+            }
+        }
 
-            // Prepend new name to container, limit to 5 names
-            namesContainer.insertBefore(nameCard, namesContainer.firstChild);
-            if (namesContainer.children.length > 5) {
-                namesContainer.removeChild(namesContainer.lastChild);
+        // Render favorites
+        function renderFavorites() {
+            favoritesContainer.innerHTML = '';
+            favorites.forEach(nameObj => renderNameCard(nameObj, favoritesContainer, true));
+        }
+
+        // Filter names
+        function filterNames() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const gender = genderFilter.value;
+            return nameDatabase.filter(nameObj => {
+                const matchesSearch = nameObj.name.toLowerCase().includes(searchTerm);
+                const matchesGender = gender === 'all' || nameObj.gender === gender;
+                return matchesSearch && matchesGender;
+            });
+        }
+
+        // Generate random name
+        generateButton.addEventListener('click', () => {
+            const filteredNames = filterNames();
+            if (filteredNames.length === 0) {
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
+                return;
+            }
+            const nameObj = filteredNames[Math.floor(Math.random() * filteredNames.length)];
+            renderNameCard(nameObj, namesContainer);
+        });
+
+        // Handle favorite button
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('favorite-btn')) {
+                const name = e.target.dataset.name;
+                const nameObj = nameDatabase.find(n => n.name === name);
+                if (favorites.some(fav => fav.name === name)) {
+                    favorites = favorites.filter(fav => fav.name !== name);
+                    e.target.innerHTML = '♡';
+                    e.target.classList.remove('text-pink-500');
+                    e.target.classList.add('text-gray-400');
+                } else {
+                    favorites.push(nameObj);
+                    e.target.innerHTML = '♥';
+                    e.target.classList.remove('text-gray-400');
+                    e.target.classList.add('text-pink-500');
+                }
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                renderFavorites();
             }
         });
+
+        // Filter event listeners
+        searchInput.addEventListener('input', () => {
+            namesContainer.innerHTML = '';
+            const filteredNames = filterNames();
+            if (filteredNames.length === 0) {
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
+            }
+        });
+        genderFilter.addEventListener('change', () => {
+            namesContainer.innerHTML = '';
+            const filteredNames = filterNames();
+            if (filteredNames.length === 0) {
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
+            }
+        });
+
+        // Initial render of favorites
+        renderFavorites();
     </script>
 </body>
 </html>
