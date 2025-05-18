@@ -13,6 +13,7 @@
             color: #1a202c;
             min-height: 100vh;
             overflow-x: hidden;
+            margin: 0;
         }
 
         .name-card {
@@ -63,10 +64,54 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        #introPage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4c51bf, #ed64a6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        #introPage.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-btn {
+            background: white;
+            color: #4c51bf;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .intro-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body class="flex flex-col">
-    <div class="container mx-auto px-4 py-12 flex-grow flex flex-col items-center">
+    <!-- Intro Page -->
+    <div id="introPage">
+        <h1 class="text-5xl md:text-6xl font-bold mb-6 text-center">Baby Name Picker</h1>
+        <p class="text-lg mb-8 text-center max-w-md">Tap to discover unique and meaningful names for your little buddy!</p>
+        <button id="enterButton" class="intro-btn">Tap to Enter</button>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="container mx-auto px-4 py-12 flex-grow flex flex-col items-center hidden">
         <h1 class="text-4xl md:text-5xl font-bold mb-6 text-center text-indigo-900">
             Baby Name Picker
         </h1>
@@ -136,14 +181,18 @@
         ];
 
         // DOM Elements
+        const introPage = document.getElementById('introPage');
+        const enterButton = document.getElementById('enterButton');
+        const mainApp = document.getElementById('mainApp');
         const generateButton = document.getElementById('generateButton');
         const namesContainer = document.getElementById('namesContainer');
         const favoritesContainer = document.getElementById('favoritesContainer');
         const searchInput = document.getElementById('searchInput');
         const genderFilter = document.getElementById('genderFilter');
 
-        // Favorites storage
+        // Favorites and session storage
         let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let sessionNames = JSON.parse(sessionStorage.getItem('sessionNames')) || [];
 
         // Render name card
         function renderNameCard(nameObj, container, isFavorite = false) {
@@ -183,6 +232,33 @@
             });
         }
 
+        // Generate fresh names for new session
+        function generateFreshNames() {
+            namesContainer.innerHTML = '';
+            sessionNames = [];
+            const filteredNames = filterNames();
+            if (filteredNames.length === 0) {
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
+                return;
+            }
+            const numNames = Math.min(5, filteredNames.length);
+            const shuffled = filteredNames.sort(() => 0.5 - Math.random());
+            for (let i = 0; i < numNames; i++) {
+                const nameObj = shuffled[i];
+                sessionNames.push(nameObj);
+                renderNameCard(nameObj, namesContainer);
+            }
+            sessionStorage.setItem('sessionNames', JSON.stringify(sessionNames));
+        }
+
+        // Transition from intro to main app
+        enterButton.addEventListener('click', () => {
+            introPage.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            generateFreshNames();
+            renderFavorites();
+        });
+
         // Generate random name
         generateButton.addEventListener('click', () => {
             const filteredNames = filterNames();
@@ -190,7 +266,15 @@
                 namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
                 return;
             }
-            const nameObj = filteredNames[Math.floor(Math.random() * filteredNames.length)];
+            // Avoid duplicates in session
+            const availableNames = filteredNames.filter(nameObj => !sessionNames.some(sn => sn.name === nameObj.name));
+            if (availableNames.length === 0) {
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No new names available. Try resetting filters.</p>';
+                return;
+            }
+            const nameObj = availableNames[Math.floor(Math.random() * availableNames.length)];
+            sessionNames.push(nameObj);
+            sessionStorage.setItem('sessionNames', JSON.stringify(sessionNames));
             renderNameCard(nameObj, namesContainer);
         });
 
@@ -216,23 +300,8 @@
         });
 
         // Filter event listeners
-        searchInput.addEventListener('input', () => {
-            namesContainer.innerHTML = '';
-            const filteredNames = filterNames();
-            if (filteredNames.length === 0) {
-                namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
-            }
-        });
-        genderFilter.addEventListener('change', () => {
-            namesContainer.innerHTML = '';
-            const filteredNames = filterNames();
-            if (filteredNames.length === 0) {
-                namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
-            }
-        });
-
-        // Initial render of favorites
-        renderFavorites();
+        searchInput.addEventListener('input', generateFreshNames);
+        genderFilter.addEventListener('change', generateFreshNames);
     </script>
 </body>
 </html>
