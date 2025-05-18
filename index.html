@@ -55,6 +55,16 @@
             color: white;
         }
 
+        .reset-btn {
+            background: #f56565;
+            color: white;
+            transition: transform 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            transform: scale(1.05);
+        }
+
         .favorite-btn {
             transition: color 0.3s ease;
         }
@@ -122,7 +132,7 @@
     <!-- Intro Page -->
     <div id="introPage">
         <h1 class="text-5xl md:text-6xl font-bold mb-6 text-center">Baby Name Picker</h1>
-        <p class="text-lg mb-8 text-center max-w-md">Tap to discover unique and meaningful names for your little buddy!</p>
+        <p class="text-lg mb-8 text-center max-w-md">Discover unique and meaningful names for your little buddy!</p>
         <button id="enterButton" class="intro-btn">Tap to Enter</button>
     </div>
 
@@ -132,7 +142,7 @@
             Baby Name Picker
         </h1>
         <p class="text-lg text-gray-600 mb-8 text-center max-w-md">
-            Discover unique and meaningful names for your little one!
+            Explore a vast collection of names for your little one!
         </p>
 
         <!-- Filters -->
@@ -146,16 +156,17 @@
             </select>
         </div>
 
-        <!-- Generate Button -->
-        <button id="generateButton" class="generate-btn text-white py-3 px-8 rounded-full mb-4 text-lg font-semibold">
-            Pick a Name
-        </button>
-
-        <!-- Control Buttons -->
-        <div class="flex gap-3 mb-8">
-            <button id="playButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold">Play</button>
-            <button id="pauseButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold">Pause</button>
-            <button id="nextButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold">Next</button>
+        <!-- Controls -->
+        <div class="flex flex-col items-center gap-4 mb-8">
+            <button id="generateButton" class="generate-btn text-white py-3 px-8 rounded-full text-lg font-semibold">
+                Pick a Name
+            </button>
+            <div class="flex gap-3">
+                <button id="playButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold">Play</button>
+                <button id="pauseButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold active">Pause</button>
+                <button id="nextButton" class="control-btn py-2 px-4 rounded-full text-sm font-semibold">Next</button>
+                <button id="resetButton" class="reset-btn py-2 px-4 rounded-full text-sm font-semibold">Reset Session</button>
+            </div>
         </div>
 
         <!-- Names Container -->
@@ -169,38 +180,93 @@
     </div>
 
     <script>
-        // Expanded name database
+        // Comprehensive name database
         const nameDatabase = [
-            { name: 'Aria', origin: 'Italian', meaning: 'Song or melody', gender: 'female' },
-            { name: 'Kai', origin: 'Hawaiian', meaning: 'Sea', gender: 'neutral' },
-            { name: 'Zara', origin: 'Arabic', meaning: 'Blooming flower', gender: 'female' },
-            { name: 'Rowan', origin: 'Gaelic', meaning: 'Little red one', gender: 'neutral' },
-            { name: 'Nova', origin: 'Latin', meaning: 'New', gender: 'female' },
+            // Male Names
+            { name: 'Ethan', origin: 'Hebrew', meaning: 'Strong', gender: 'male' },
+            { name: 'Liam', origin: 'Irish', meaning: 'Strong-willed warrior', gender: 'male' },
+            { name: 'Noah', origin: 'Hebrew', meaning: 'Rest', gender: 'male' },
+            { name: 'Oliver', origin: 'Latin', meaning: 'Olive tree', gender: 'male' },
+            { name: 'Elijah', origin: 'Hebrew', meaning: 'My God is Yahweh', gender: 'male' },
+            { name: 'James', origin: 'Hebrew', meaning: 'Supplanter', gender: 'male' },
+            { name: 'William', origin: 'Germanic', meaning: 'Resolute protector', gender: 'male' },
+            { name: 'Benjamin', origin: 'Hebrew', meaning: 'Son of the right hand', gender: 'male' },
+            { name: 'Lucas', origin: 'Latin', meaning: 'Light', gender: 'male' },
+            { name: 'Henry', origin: 'Germanic', meaning: 'Home ruler', gender: 'male' },
             { name: 'Ezra', origin: 'Hebrew', meaning: 'Helper', gender: 'male' },
-            { name: 'Luna', origin: 'Latin', meaning: 'Moon', gender: 'female' },
-            { name: 'Sage', origin: 'Latin', meaning: 'Wise', gender: 'neutral' },
             { name: 'Atlas', origin: 'Greek', meaning: 'To carry', gender: 'male' },
-            { name: 'Phoenix', origin: 'Greek', meaning: 'Dark red', gender: 'neutral' },
-            { name: 'Seren', origin: 'Welsh', meaning: 'Star', gender: 'female' },
             { name: 'Orion', origin: 'Greek', meaning: 'Rising in the sky', gender: 'male' },
+            { name: 'Finn', origin: 'Irish', meaning: 'Fair', gender: 'male' },
+            { name: 'Theo', origin: 'Greek', meaning: 'Gift of God', gender: 'male' },
+            { name: 'Jasper', origin: 'Persian', meaning: 'Bringer of treasure', gender: 'male' },
+            { name: 'Silas', origin: 'Latin', meaning: 'Forest', gender: 'male' },
+            { name: 'Arlo', origin: 'English', meaning: 'Fortified hill', gender: 'male' },
+            { name: 'Cairo', origin: 'Arabic', meaning: 'Victorious', gender: 'male' },
+            { name: 'Milo', origin: 'Germanic', meaning: 'Merciful', gender: 'male' },
+            { name: 'Levi', origin: 'Hebrew', meaning: 'Joined', gender: 'male' },
+            { name: 'Asher', origin: 'Hebrew', meaning: 'Happy', gender: 'male' },
+            { name: 'Felix', origin: 'Latin', meaning: 'Lucky', gender: 'male' },
+            { name: 'Jude', origin: 'Hebrew', meaning: 'Praise', gender: 'male' },
+            { name: 'Hugo', origin: 'Germanic', meaning: 'Mind', gender: 'male' },
+            { name: 'Declan', origin: 'Irish', meaning: 'Man of prayer', gender: 'male' },
+            { name: 'Ronan', origin: 'Irish', meaning: 'Little seal', gender: 'male' },
+            { name: 'Amir', origin: 'Arabic', meaning: 'Prince', gender: 'male' },
+            { name: 'Soren', origin: 'Danish', meaning: 'Stern', gender: 'male' },
+            { name: 'Kian', origin: 'Persian', meaning: 'King', gender: 'male' },
+
+            // Female Names
+            { name: 'Emma', origin: 'Germanic', meaning: 'Universal', gender: 'female' },
+            { name: 'Olivia', origin: 'Latin', meaning: 'Olive tree', gender: 'female' },
+            { name: 'Ava', origin: 'Latin', meaning: 'Life', gender: 'female' },
+            { name: 'Sophia', origin: 'Greek', meaning: 'Wisdom', gender: 'female' },
+            { name: 'Isabella', origin: 'Hebrew', meaning: 'Pledged to God', gender: 'female' },
+            { name: 'Charlotte', origin: 'French', meaning: 'Free man', gender: 'female' },
+            { name: 'Mia', origin: 'Latin', meaning: 'Mine', gender: 'female' },
+            { name: 'Amelia', origin: 'Germanic', meaning: 'Work', gender: 'female' },
+            { name: 'Harper', origin: 'English', meaning: 'Harp player', gender: 'female' },
+            { name: 'Evelyn', origin: 'English', meaning: 'Wished for child', gender: 'female' },
+            { name: 'Aria', origin: 'Italian', meaning: 'Song or melody', gender: 'female' },
+            { name: 'Zara', origin: 'Arabic', meaning: 'Blooming flower', gender: 'female' },
+            { name: 'Nova', origin: 'Latin', meaning: 'New', gender: 'female' },
+            { name: 'Luna', origin: 'Latin', meaning: 'Moon', gender: 'female' },
+            { name: 'Seren', origin: 'Welsh', meaning: 'Star', gender: 'female' },
+            { name: 'Lyra', origin: 'Greek', meaning: 'Lyre', gender: 'female' },
+            { name: 'Mila', origin: 'Slavic', meaning: 'Gracious', gender: 'female' },
+            { name: 'Ivy', origin: 'English', meaning: 'Climbing vine', gender: 'female' },
+            { name: 'Willow', origin: 'English', meaning: 'Graceful', gender: 'female' },
+            { name: 'Esme', origin: 'French', meaning: 'Loved', gender: 'female' },
+            { name: 'Juni', origin: 'Latin', meaning: 'Youthful', gender: 'female' },
+            { name: 'Amara', origin: 'African', meaning: 'Eternal', gender: 'female' },
+            { name: 'Hazel', origin: 'English', meaning: 'Hazelnut tree', gender: 'female' },
+            { name: 'Freya', origin: 'Norse', meaning: 'Noble lady', gender: 'female' },
+            { name: 'Elsie', origin: 'Scottish', meaning: 'Pledged to God', gender: 'female' },
+            { name: 'Cora', origin: 'Greek', meaning: 'Maiden', gender: 'female' },
+            { name: 'Ada', origin: 'Germanic', meaning: 'Noble', gender: 'female' },
+            { name: 'Lila', origin: 'Arabic', meaning: 'Night', gender: 'female' },
+            { name: 'Sienna', origin: 'Italian', meaning: 'Orange-red', gender: 'female' },
+            { name: 'Eliza', origin: 'Hebrew', meaning: 'Joyful', gender: 'female' },
+
+            // Gender Neutral Names
+            { name: 'Alex', origin: 'Greek', meaning: 'Defender', gender: 'neutral' },
+            { name: 'Taylor', origin: 'English', meaning: 'Tailor', gender: 'neutral' },
+            { name: 'Jordan', origin: 'Hebrew', meaning: 'To flow down', gender: 'neutral' },
+            { name: 'Riley', origin: 'Irish', meaning: 'Valiant', gender: 'neutral' },
+            { name: 'Avery', origin: 'English', meaning: 'Ruler of elves', gender: 'neutral' },
+            { name: 'Quinn', origin: 'Irish', meaning: 'Wise', gender: 'neutral' },
+            { name: 'Kai', origin: 'Hawaiian', meaning: 'Sea', gender: 'neutral' },
+            { name: 'Rowan', origin: 'Gaelic', meaning: 'Little red one', gender: 'neutral' },
+            { name: 'Sage', origin: 'Latin', meaning: 'Wise', gender: 'neutral' },
+            { name: 'Phoenix', origin: 'Greek', meaning: 'Dark red', gender: 'neutral' },
             { name: 'Raven', origin: 'English', meaning: 'Black bird', gender: 'neutral' },
             { name: 'Ember', origin: 'English', meaning: 'Burning coal', gender: 'neutral' },
-            { name: 'Lyra', origin: 'Greek', meaning: 'Lyre', gender: 'female' },
-            { name: 'Finn', origin: 'Irish', meaning: 'Fair', gender: 'male' },
-            { name: 'Mila', origin: 'Slavic', meaning: 'Gracious', gender: 'female' },
-            { name: 'Theo', origin: 'Greek', meaning: 'Gift of God', gender: 'male' },
-            { name: 'Ivy', origin: 'English', meaning: 'Climbing vine', gender: 'female' },
-            { name: 'Jasper', origin: 'Persian', meaning: 'Bringer of treasure', gender: 'male' },
-            { name: 'Willow', origin: 'English', meaning: 'Graceful', gender: 'female' },
             { name: 'Remy', origin: 'French', meaning: 'Oarsman', gender: 'neutral' },
-            { name: 'Esme', origin: 'French', meaning: 'Loved', gender: 'female' },
-            { name: 'Cairo', origin: 'Arabic', meaning: 'Victorious', gender: 'male' },
-            { name: 'Juni', origin: 'Latin', meaning: 'Youthful', gender: 'female' },
             { name: 'Zephyr', origin: 'Greek', meaning: 'West wind', gender: 'neutral' },
-            { name: 'Amara', origin: 'African', meaning: 'Eternal', gender: 'female' },
-            { name: 'Silas', origin: 'Latin', meaning: 'Forest', gender: 'male' },
-            { name: 'Hazel', origin: 'English', meaning: 'Hazelnut tree', gender: 'female' },
-            { name: 'Arlo', origin: 'English', meaning: 'Fortified hill', gender: 'male' }
+            { name: 'River', origin: 'English', meaning: 'Flowing water', gender: 'neutral' },
+            { name: 'Skyler', origin: 'Dutch', meaning: 'Scholar', gender: 'neutral' },
+            { name: 'Aspen', origin: 'English', meaning: 'Poplar tree', gender: 'neutral' },
+            { name: 'Ellis', origin: 'English', meaning: 'Kind', gender: 'neutral' },
+            { name: 'Emerson', origin: 'English', meaning: 'Son of Emery', gender: 'neutral' },
+            { name: 'Finley', origin: 'Scottish', meaning: 'Fair warrior', gender: 'neutral' }
         ];
 
         // DOM Elements
@@ -211,19 +277,26 @@
         const playButton = document.getElementById('playButton');
         const pauseButton = document.getElementById('pauseButton');
         const nextButton = document.getElementById('nextButton');
+        const resetButton = document.getElementById('resetButton');
         const namesContainer = document.getElementById('namesContainer');
         const favoritesContainer = document.getElementById('favoritesContainer');
         const searchInput = document.getElementById('searchInput');
         const genderFilter = document.getElementById('genderFilter');
 
-        // Favorites and session storage
+        // State Management
         let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
         let sessionNames = JSON.parse(sessionStorage.getItem('sessionNames')) || [];
         let isPlaying = false;
-        let cycleInterval;
+        let cycleInterval = null;
 
-        // Render name card
+        // Utility Functions
+        function shuffleArray(array) {
+            return array.sort(() => Math.random() - 0.5);
+        }
+
+        // Render a single name card
         function renderNameCard(nameObj, container, isFavorite = false) {
+            if (!nameObj || !nameObj.name) return;
             const nameCard = document.createElement('div');
             nameCard.classList.add('name-card', 'p-6', 'fade-in');
             nameCard.innerHTML = `
@@ -243,15 +316,19 @@
             }
         }
 
-        // Render favorites
+        // Render all favorites
         function renderFavorites() {
             favoritesContainer.innerHTML = '';
+            if (favorites.length === 0) {
+                favoritesContainer.innerHTML = '<p class="text-center text-gray-500">No favorites yet.</p>';
+                return;
+            }
             favorites.forEach(nameObj => renderNameCard(nameObj, favoritesContainer, true));
         }
 
-        // Filter names
+        // Filter names based on search and gender
         function filterNames() {
-            const searchTerm = searchInput.value.toLowerCase();
+            const searchTerm = searchInput.value.trim().toLowerCase();
             const gender = genderFilter.value;
             return nameDatabase.filter(nameObj => {
                 const matchesSearch = nameObj.name.toLowerCase().includes(searchTerm);
@@ -265,58 +342,64 @@
             namesContainer.innerHTML = '';
             const filteredNames = filterNames();
             if (filteredNames.length === 0) {
-                namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria. Try adjusting the filters.</p>';
                 return;
             }
             const availableNames = filteredNames.filter(nameObj => !sessionNames.some(sn => sn.name === nameObj.name));
             if (availableNames.length === 0) {
-                namesContainer.innerHTML = '<p class="text-center text-gray-500">No new names available. Try resetting filters or starting a new session.</p>';
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No new names available. Try resetting the session or adjusting filters.</p>';
                 return;
             }
             const numNames = Math.min(5, availableNames.length);
-            const shuffled = availableNames.sort(() => 0.5 - Math.random());
-            for (let i = 0; i < numNames; i++) {
-                const nameObj = shuffled[i];
+            const shuffledNames = shuffleArray([...availableNames]).slice(0, numNames);
+            shuffledNames.forEach(nameObj => {
                 sessionNames.push(nameObj);
                 renderNameCard(nameObj, namesContainer);
-            }
+            });
             sessionStorage.setItem('sessionNames', JSON.stringify(sessionNames));
         }
 
         // Start auto-cycling names
         function startCycling() {
-            if (!isPlaying) {
-                isPlaying = true;
-                playButton.classList.add('active');
-                pauseButton.classList.remove('active');
-                cycleInterval = setInterval(() => {
-                    generateFreshBatch();
-                }, 5000); // Cycle every 5 seconds
-            }
+            if (isPlaying) return;
+            isPlaying = true;
+            playButton.classList.add('active');
+            pauseButton.classList.remove('active');
+            cycleInterval = setInterval(() => {
+                generateFreshBatch();
+            }, 5000);
         }
 
         // Pause auto-cycling
         function pauseCycling() {
-            if (isPlaying) {
-                isPlaying = false;
-                playButton.classList.remove('active');
-                pauseButton.classList.add('active');
-                clearInterval(cycleInterval);
-            }
+            if (!isPlaying) return;
+            isPlaying = false;
+            playButton.classList.remove('active');
+            pauseButton.classList.add('active');
+            clearInterval(cycleInterval);
+            cycleInterval = null;
         }
 
+        // Reset session
+        function resetSession() {
+            pauseCycling();
+            sessionNames = [];
+            sessionStorage.setItem('sessionNames', JSON.stringify(sessionNames));
+            generateFreshBatch();
+        }
+
+        // Event Listeners
         // Transition from intro to main app
         enterButton.addEventListener('click', () => {
             introPage.classList.add('hidden');
             mainApp.classList.remove('hidden');
             generateFreshBatch();
             renderFavorites();
-            startCycling(); // Start cycling on entry
         });
 
         // Generate single random name
         generateButton.addEventListener('click', () => {
-            pauseCycling(); // Pause cycling when manually picking a name
+            pauseCycling();
             const filteredNames = filterNames();
             if (filteredNames.length === 0) {
                 namesContainer.innerHTML = '<p class="text-center text-gray-500">No names match your criteria.</p>';
@@ -324,7 +407,7 @@
             }
             const availableNames = filteredNames.filter(nameObj => !sessionNames.some(sn => sn.name === nameObj.name));
             if (availableNames.length === 0) {
-                namesContainer.innerHTML = '<p class="text-center text-gray-500">No new names available. Try resetting filters.</p>';
+                namesContainer.innerHTML = '<p class="text-center text-gray-500">No new names available. Try resetting the session.</p>';
                 return;
             }
             const nameObj = availableNames[Math.floor(Math.random() * availableNames.length)];
@@ -334,26 +417,26 @@
         });
 
         // Play button
-        playButton.addEventListener('click', () => {
-            startCycling();
-        });
+        playButton.addEventListener('click', startCycling);
 
         // Pause button
-        pauseButton.addEventListener('click', () => {
-            pauseCycling();
-        });
+        pauseButton.addEventListener('click', pauseCycling);
 
         // Next button
         nextButton.addEventListener('click', () => {
-            pauseCycling(); // Pause cycling when manually advancing
+            pauseCycling();
             generateFreshBatch();
         });
 
-        // Handle favorite button
+        // Reset button
+        resetButton.addEventListener('click', resetSession);
+
+        // Favorite button
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('favorite-btn')) {
                 const name = e.target.dataset.name;
                 const nameObj = nameDatabase.find(n => n.name === name);
+                if (!nameObj) return;
                 if (favorites.some(fav => fav.name === name)) {
                     favorites = favorites.filter(fav => fav.name !== name);
                     e.target.innerHTML = '♡';
@@ -370,15 +453,19 @@
             }
         });
 
-        // Filter event listeners
+        // Filter inputs
         searchInput.addEventListener('input', () => {
-            pauseCycling(); // Pause cycling when filters change
+            pauseCycling();
             generateFreshBatch();
         });
+
         genderFilter.addEventListener('change', () => {
-            pauseCycling(); // Pause cycling when filters change
+            pauseCycling();
             generateFreshBatch();
         });
+
+        // Initialize
+        renderFavorites();
     </script>
 </body>
 </html>
